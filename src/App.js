@@ -1,40 +1,42 @@
 import React, { useState } from 'react';
-import { registrarUsuario } from "./api/usuario"
-import "./App.css"
+import { criarTarefa, getAllTarefas, deletarTarefa } from "./api/tarefas"
 
 function App() {
-  const [nome, setNome] = useState()
-  const [email, setEmail] = useState()
-  const [senha, setSenha] = useState()
-  const [idade, setIdade] = useState()
+  const [tarefa, setTarefa] = useState("")
+  const [lista, setLista] = useState("")
 
-  const handleSubmit = (event) => {
-    event.preventDefault()
-    const data = { name: nome, email: email, password: senha, age: idade }
-    registrarUsuario(data)
+  const criar = () => {
+    const conteudo = { tarefa: tarefa }
+    criarTarefa(conteudo)
+  }
+
+  const listar = async() => {
+    const result = await getAllTarefas()
+    setLista(result)
+  }
+
+  const deletar = (id) => {
+    deletarTarefa(id)
   }
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Nome:
-          <input type="text" onChange={(event) => setNome(event.target.value)} />
-        </label>
-        <label>
-          Email:
-          <input type="text" onChange={(event) => setEmail(event.target.value)} />
-        </label>
-        <label>
-          Senha:
-          <input type="password" onChange={(event) => setSenha(event.target.value)} />
-        </label>
-        <label>
-          Idade:
-          <input type="text" onChange={(event) => setIdade(event.target.value)} />
-        </label>
-        <input type="submit" />
-      </form>
+      <label>
+        Crie sua tarefa:
+        <input type="text" onChange={(event) => setTarefa(event.target.value)} />
+      </label>
+      <button onClick={() => criar()}>Criar</button>
+      <button onClick={() => listar()}>Listar tarefas</button>
+      {lista && (lista.data?.map(element => {
+        return (
+          <div key={element.id} onClick={()=> deletar(element.id)}>
+            <p>Tarefa</p>
+            <p>{element.tarefa}</p>
+            <p>ID</p>
+            <p>{element.id}</p>
+          </div>
+        )
+      }))}
     </div>
   );
 }
